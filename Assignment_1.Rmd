@@ -1,0 +1,148 @@
+---
+title: "Assignment 1 – Data Analysis using R Programming"
+output: pdf_document
+date: "2024-02-08"
+---
+----
+Group 3
+Yuen Ting Kung
+Ceci Lau
+Christopher Sta. Romana
+Giwoon Yang
+Alex Sydfrey Ygusguiza
+Man Chun, Yuen
+Lawrence Wu
+----
+
+```{r}
+library(ggplot2)
+library(readxl)
+covid_19_data <- read_excel("covid_19_data.xlsx")
+library(tidyverse)
+```
+## •Print the structure of your dataset
+```{r}
+str(covid_19_data)
+```
+## •List the variables in your dataset
+```{r}
+names(covid_19_data)
+```
+## •Print the top 15 rows of your dataset
+```{r}
+head(covid_19_data, n = 15)
+```
+## •Write a user defined function using any of the variables from the data set
+```{r}
+# Function that calculates the average recovered covid cases
+avg_recovered <- function(data) {
+  return(mean(covid_19_data$Recovered))
+}
+
+# Example:
+avg_recovered(covid_19_data)
+```
+## •Use data manipulation techniques and filter rows based on any logical criteria that exist in your dataset
+```{r}
+country_reg = as.data.frame(covid_19_data %>% filter(covid_19_data$`Country/Region` == "Taiwan"))
+head(country_reg)
+```
+## •Identify the dependent & independent variables and use reshaping techniques and create a new data frame by joining those variables from your dataset
+```{r}
+cov19_new = as.data.frame((covid_19_data %>% select(3,6:8)))
+head(cov19_new)
+```
+## • Remove missing values in your dataset
+```{r}
+na.omit(covid_19_data)
+```
+## •Identify and remove duplicated data in your dataset
+```{r}
+covid_19_data_test <- read_excel("covid_19_data_test.xlsx")
+
+# Identifty duplicated data
+duplicated(covid_19_data_test)
+
+# Remove duplicated data
+cov19_unique = unique(covid_19_data_test)
+
+# Run duplicated operation again, expected output: all entry is FALSE 
+duplicated(cov19_unique)
+```
+## •Reorder multiple rows in descending order
+```{r}
+covid_19_data %>% arrange(desc(SNo))
+```
+## •Rename some of the column names in your dataset
+```{r}
+covid_19_data %>% rename(Observation_Date = ObservationDate, Province_State =`Province/State`)
+```
+## •Add new variables in your data frame by using a mathematical function (for e.g. – multiply an existing column by 2 and add it as a new variable to your data frame)
+```{r}
+covid_19_data = as.data.frame(covid_19_data %>% mutate(New.Status = covid_19_data$Confirmed - 
+                                                         covid_19_data$Recovered))
+head(covid_19_data)
+```
+## •Create a training set using random number generator engine
+```{r}
+cov19_training = cbind(covid_19_data$`Province/State`, covid_19_data$`Country/Region`, 
+                       covid_19_data$Confirmed, covid_19_data$Recovered)
+cov19_training = as.data.frame(cov19_training)
+set.seed(1234)
+
+cov19_training = as.data.frame(cov19_training %>% sample_frac(0.8, replace = FALSE))
+head(cov19_training)
+
+# Run generator again to show difference
+cov19_training = as.data.frame(cov19_training %>% sample_frac(0.8, replace = FALSE))
+head(cov19_training)
+```
+## •Print the summary statistics of your dataset
+```{r}
+summary(covid_19_data)
+```
+## •Use any of the numerical variables from the dataset and perform the following statistical functions
+```{r}
+# Mean of confirmed cases
+conf_mean <- c(covid_19_data$Confirmed) 
+result.mean <- mean(conf_mean)
+print(result.mean)
+
+# Median of deaths
+death_median <- c(covid_19_data$Deaths) 
+result.median <- mean(death_median)
+print(result.median)
+
+# Mode of range of Country/Region
+reg_mode <- c(covid_19_data$`Country/Region`)
+result.mode <- mode(reg_mode)
+print(result.mode)
+
+# Range of recovered cases
+print(range(covid_19_data$Recovered))
+```
+## •Plot a scatter plot for any 2 variables in your dataset
+```{r}
+# Scatter plot of covid deaths against confirmed cases
+ggplot(covid_19_data, aes(x = Deaths, y = Confirmed)) + geom_point(size = 1.2, color = "red2",
+                                                                   shape = 21)
+```
+
+
+## •Plot a bar plot for any 2 variables in your dataset
+
+
+```{r}
+# Bar Plot of covid deaths per country
+ggplot(covid_19_data, aes(x = `Country/Region`, fill = Deaths))+geom_bar(fill = "chocolate1")
+```
+
+
+## •Find the correlation between any 2 variables by applying least square linear regression model
+```{r}
+# Correlation of confirmed covid cases againts recovered cases
+cov19_corr = cor(covid_19_data$Confirmed, covid_19_data$Recovered, method = "pearson")
+cov19_corr
+```
+
+^[The .RMD file, PDF report, and the dataset can be found on https://github.com/alexsydfrey/Data-Analysis-using-R]
